@@ -135,7 +135,7 @@ const handleLocationSearch = () => {
         const data = await result.json()
 
         if (data?.geonames?.[0]?.name) {
-          // ормалізація:
+          // нормалізація:
           searchQuery.value = normalizeCityName(data.geonames[0].name)
         }
       } catch (err) {
