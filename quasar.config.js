@@ -31,6 +31,11 @@ export default defineConfig((/* ctx */) => {
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#build
     build: {
+      envPrefix: 'VITE_',
+      rawDefine: {
+        'import.meta.env.VITE_WEATHER_API_KEY': JSON.stringify('e0af1c4c4dd149cb8ed103703262309'),
+        'import.meta.env.VITE_GEONAMES_USERNAME': JSON.stringify('nikoletta17'),
+      },
       target: {
         // browser: 'baseline-widely-available',
         // node: 'node22'

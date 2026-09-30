@@ -1,1 +1,489 @@
-// app global css
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0');
+
+:root,
+body.light,
+.container.light {
+  --body-bg: linear-gradient(#f4ebff, #cbb1e6);
+  --container-bg: linear-gradient(#352163, #33143c);
+  --accent-color: #a38cd9;
+  --accent-hover: #d39fdf;
+  --scrollbar-thumb: #c5bcdb;
+  --text-main: #ffffff;
+  --border-light: rgba(255, 255, 255, 0.25);
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --btn-bg: rgba(255, 255, 255, 0.1);
+  --dropdown-bg: #352163;
+  --dropdown-hover: rgba(255, 255, 255, 0.12);
+}
+
+body.dark,
+.container.dark {
+  --body-bg: linear-gradient(135deg, #133b63, #1d5b94);
+  /* картку та решту залишаєш як було: */
+  --container-bg: linear-gradient(#0f172a, #132f4c);
+  --accent-color: #38bdf8;
+  --accent-hover: #7dd3fc;
+  --scrollbar-thumb: #1c8bbb;
+  --text-main: #f0f9ff;
+  --border-light: rgba(56, 189, 248, 0.25);
+  --input-bg: rgba(15, 23, 42, 0.4);
+  --btn-bg: rgba(56, 189, 248, 0.12);
+  --dropdown-bg: #0f172a;
+  --dropdown-hover: rgba(56, 189, 248, 0.18);
+}
+
+body.light .theme-switcher-btn {
+  background: rgba(53, 33, 99, 0.15);
+  border: 1px solid rgba(53, 33, 99, 0.35);
+  color: #352163;
+  box-shadow: 0 4px 12px rgba(53, 33, 99, 0.15);
+}
+
+body.light .theme-switcher-btn:hover {
+  background: rgba(53, 33, 99, 0.25);
+  color: #210d47;
+  border-color: #352163;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.material-symbols-rounded {
+  font-family: 'Material Symbols Rounded' !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga' !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100%;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--body-bg);
+  transition: background 0.3s ease;
+}
+
+.container {
+  position: relative;
+  margin: 0 auto;
+  width: 100%;
+  z-index: 1;
+  max-width: 410px;
+  border-radius: 10px;
+  background: var(--container-bg);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  opacity: 0.7;
+  width: 100%;
+  height: 100%;
+  background-image: url(/bg.png);
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+img {
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.search-section {
+  position: relative;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  padding: 25px;
+  gap: 10px;
+}
+
+.search-section .search-form {
+  position: relative;
+  width: 100%;
+  height: 54px;
+}
+
+.search-section .search-form span {
+  color: var(--text-main);
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.search-section .search-input {
+  width: 100%;
+  height: 100%;
+  padding: 0 20px 0 50px;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: var(--text-main);
+  outline: none;
+  background: var(--input-bg);
+  border: 1px solid var(--border-light);
+  transition: 0.2s ease;
+  text-transform: uppercase;
+}
+
+.search-section .search-input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+}
+
+.search-section .search-input::placeholder {
+  color: #94a3b8;
+}
+
+.search-section .location-button {
+  width: 56px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-main);
+  background: var(--btn-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.search-section .location-button span {
+  font-size: 1.3rem;
+}
+
+.search-section .location-button:hover {
+  color: var(--accent-hover);
+  border-color: var(--accent-color);
+}
+
+.search-section .suggestions-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  list-style: none;
+  background: var(--dropdown-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  padding: 6px 0;
+  margin: 0;
+  z-index: 100;
+  max-height: 220px;
+  overflow-y: auto;
+  backdrop-filter: blur(10px);
+}
+
+/* Окремий рядок міста */
+.search-section .suggestion-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.95rem;
+  color: var(--text-main);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Виділення назви міста */
+.search-section .suggestion-item strong {
+  font-weight: 600;
+}
+
+.search-section .suggestion-item:hover {
+  background: var(--dropdown-hover);
+  color: var(--accent-hover);
+}
+
+.search-section .suggestions-list::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+
+.weather-section {
+  position: relative;
+  z-index: 1;
+}
+
+.weather-section :where(h2, p) {
+  color: var(--text-main);
+}
+
+.weather-section .current-weather {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0 50px;
+}
+
+.current-weather .weather-icon {
+  width: 140px;
+  cursor: none;
+  aspect-ratio: 1;
+}
+
+.current-weather .temperature {
+  display: flex;
+  margin: 18px 0;
+  font-size: 3.8rem;
+}
+
+.current-weather .temperature span {
+  font-weight: 400;
+  margin: 5px 0 0 2px;
+  font-size: 1.56rem;
+  color: var(--accent-color);
+}
+
+.current-weather .description {
+  font-size: 1.25rem;
+}
+
+.hourly-forecast {
+  padding: 16px 25px;
+  border-top: 1px solid var(--border-light);
+  overflow: hidden;
+}
+
+.weather-list {
+  display: flex;
+  list-style: none;
+  gap: 22px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  margin: 0;
+
+  /* Налаштування скролбару */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+.weather-list::-webkit-scrollbar {
+  height: 4px;
+}
+
+.weather-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.weather-list::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+.weather-item {
+  flex-shrink: 0;
+  width: calc((100% - 88px) / 5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.weather-item .weather-icon {
+  width: 28px;
+  aspect-ratio: 1;
+}
+
+.theme-switcher-btn {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 100;
+  background: var(--btn-bg);
+  border: 1px solid var(--border-light);
+  color: var(--text-main);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(8px);
+}
+
+.theme-switcher-btn:hover {
+  color: var(--accent-hover);
+  border-color: var(--accent-color);
+  transform: scale(1.08);
+}
+
+.no-results {
+  color: #fff;
+  display: flex;
+  text-align: center;
+  min-height: 460px;
+  padding: 60px 40px 40px;
+  flex-direction: column;
+  align-items: center;
+}
+
+.no-results .title {
+  margin: 25px 0 15px;
+}
+
+/* Responsive media query code for small screen */
+@media (max-width: 624px) {
+  body,
+  .search-section {
+    padding: 20px;
+  }
+
+  .hourly-forecast {
+    padding: 16px 20px;
+  }
+
+  .weather-item {
+    width: calc((100% - 96px) / 5);
+  }
+
+  .hourly-forecast .weather-list {
+    gap: 24px;
+  }
+
+  .no-results {
+    padding: 30px;
+    min-height: 458px;
+  }
+}
+
+@media (max-width: 420px) {
+  body,
+  .search-section {
+    padding: 15px;
+  }
+
+  .hourly-forecast {
+    padding: 12px 15px;
+  }
+
+  .hourly-forecast .weather-list {
+    gap: 16px;
+  }
+
+  .weather-item {
+    width: calc((100% - 64px) / 5);
+  }
+
+  .no-results {
+    padding: 20px 15px;
+    min-height: 380px;
+  }
+
+  .no-results .title {
+    font-size: 1.25rem;
+    margin: 15px 0 10px;
+  }
+
+  .no-results .message {
+    font-size: 0.9rem;
+  }
+}
+
+/* Стилізація випадаючого списку та кастомного скролбара */
+.suggestions-list {
+  background: var(--dropdown-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  overflow-y: auto;
+  max-height: 220px;
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 6px 4px 6px 0;
+
+  /* Підтримка сучасних браузерів (Firefox) */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+
+  /* Стилізація для Chrome, Edge, Safari */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 6px 0;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 10px;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: var(--accent-hover);
+    }
+  }
+}
+
+.suggestion-item {
+  color: var(--text-main);
+  padding: 10px 14px;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-left: 6px;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    background: var(--dropdown-hover);
+    color: var(--accent-color);
+  }
+
+  strong {
+    font-weight: 600;
+  }
+}
+
+body.body--dark,
+body.dark,
+.body--dark .q-layout,
+.body--dark .q-page-container {
+  background: linear-gradient(135deg, #091524 0%, #0d2038 50%, #122b4c 100%) !important;
+  background-attachment: fixed !important;
+}
+
+body {
+  background: var(--body-bg, linear-gradient(#f4ebff, #cbb1e6)) !important;
+  min-height: 100vh;
+}
