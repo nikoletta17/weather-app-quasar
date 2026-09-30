@@ -44,7 +44,6 @@ const searchInputRef = ref(null)
 let skipSearch = false
 let debounceTimer = null
 
-// Аналог useEffect з дебаунсом у Vue через watch
 watch(searchQuery, (newVal) => {
   if (skipSearch) {
     skipSearch = false
@@ -136,7 +135,7 @@ const handleLocationSearch = () => {
         const data = await result.json()
 
         if (data?.geonames?.[0]?.name) {
-          // Застосовуємо нормалізацію:
+          // ормалізація:
           searchQuery.value = normalizeCityName(data.geonames[0].name)
         }
       } catch (err) {

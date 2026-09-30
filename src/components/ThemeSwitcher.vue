@@ -28,7 +28,7 @@ const toggleTheme = () => {
 }
 
 onMounted(() => {
-  // Встановлюємо світлу тему за замовчуванням
+  // Світла тема за замовчуванням
   $q.dark.set(false)
   updateBodyClass(false)
 })
