@@ -1,7 +1,7 @@
 <template>
   <li class="weather-item">
     <p class="time">{{ time }}</p>
-    <img :src="`icons/${weatherIcon}.svg`" alt="Weather icon" class="weather-icon" />
+    <img :src="`/icons/${weatherIcon}.svg`" alt="Weather icon" class="weather-icon" />
     <p class="temperature">
       {{ temperature }}
       <span>°</span>
@@ -20,15 +20,20 @@ const props = defineProps({
   },
 })
 
-const temperature = computed(() => Math.floor(props.hourlyWeather.temp_c))
+const temperature = computed(() => Math.floor(props.hourlyWeather?.temp_c ?? 0))
 
 const time = computed(() => {
+  if (!props.hourlyWeather?.time) return ''
   return props.hourlyWeather.time.split(' ')[1].substring(0, 5)
 })
 
 const weatherIcon = computed(() => {
-  return Object.keys(weatherCodes).find((icon) =>
-    weatherCodes[icon].includes(props.hourlyWeather.condition.code),
-  )
+  const code = Number(props.hourlyWeather?.condition?.code)
+
+  // Шукаємо назву іконки за кодом
+  const found = Object.keys(weatherCodes).find((icon) => weatherCodes[icon].includes(code))
+
+  // Якщо коду немає в списку, ставимо дефолтну 'clouds', щоб картинка не ламалася
+  return found || 'clouds'
 })
 </script>

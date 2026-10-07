@@ -32,7 +32,7 @@ import { weatherCodes } from '../constants.js'
 const currentWeather = ref({
   temperature: 0,
   description: '',
-  weatherIcon: 'clear',
+  weatherIcon: 'clouds',
 })
 const hourlyForecast = ref([])
 const hasNoResults = ref(false)
@@ -52,16 +52,28 @@ const filterHourlyForecast = (hourlyData) => {
 
 const getWeatherDetails = async (API_URL) => {
   hasNoResults.value = false
+
+  if (API_URL === 'INVALID_SEARCH') {
+    hasNoResults.value = true
+    return
+  }
+
   try {
     const response = await fetch(API_URL)
-    if (!response.ok) throw new Error()
     const data = await response.json()
+
+    //API error occured
+    if (!response.ok || data.error || !data.current || !data.forecast) {
+      hasNoResults.value = true
+      return
+    }
 
     const temperature = Math.floor(data.current.temp_c)
     const description = data.current.condition.text
-    const weatherIcon = Object.keys(weatherCodes).find((icon) =>
-      weatherCodes[icon].includes(data.current.condition.code),
-    )
+
+    const code = Number(data.current?.condition?.code)
+    const matchedIcon = Object.keys(weatherCodes).find((icon) => weatherCodes[icon].includes(code))
+    const weatherIcon = matchedIcon || 'clouds'
 
     currentWeather.value = { temperature, description, weatherIcon }
 
@@ -70,16 +82,18 @@ const getWeatherDetails = async (API_URL) => {
       ...data.forecast.forecastday[1].hour,
     ]
 
-    // Нормалізація назви: замінюємо застарілі чи районні назви на Dnipro
+    //Перевірка назви міста
     let cityName = data.location.name
     const lowerCity = cityName.toLowerCase()
 
-    if (
+    const isDniproArea =
+      lowerCity.includes('dnepr') ||
       lowerCity.includes('dnepropetrovsk') ||
       lowerCity.includes('lotskamenka') ||
       lowerCity.includes('amur') ||
-      lowerCity.includes('dnepr')
-    ) {
+      (Math.abs(data.location.lat - 48.46) < 0.25 && Math.abs(data.location.lon - 35.04) < 0.25)
+
+    if (isDniproArea && !lowerCity.includes('dniprorudne')) {
       cityName = 'Dnipro'
     }
 
@@ -88,15 +102,17 @@ const getWeatherDetails = async (API_URL) => {
     }
 
     filterHourlyForecast(combinedHourlyData)
-  } catch {
+  } catch (error) {
+    console.error('Ошибка при получении погоды:', error)
     hasNoResults.value = true
   }
 }
 
 onMounted(() => {
   const API_KEY = import.meta.env.VITE_WEATHER_API_KEY || 'e0af1c4c4dd149cb8ed103703262309'
+  // Координати Дніпра
   getWeatherDetails(
-    `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=Dnepropetrovsk&days=2`,
+    `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=48.4647,35.0462&days=2`,
   )
 })
 </script>

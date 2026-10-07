@@ -13,12 +13,12 @@
       <ul v-if="isOpen && suggestions.length > 0" class="suggestions-list">
         <li
           v-for="item in suggestions"
-          :key="item.geonameId"
+          :key="item.id"
           class="suggestion-item"
           @click="selectCity(item)"
         >
           <strong>{{ item.name }}</strong
-          >, {{ item.countryName }}
+          >, {{ item.country }}
         </li>
       </ul>
     </form>
@@ -34,7 +34,6 @@ import { ref, watch } from 'vue'
 const emit = defineEmits(['get-weather-details'])
 
 const API_KEY = import.meta.env.VITE_WEATHER_API_KEY || 'e0af1c4c4dd149cb8ed103703262309'
-const GEONAMES_USER = import.meta.env.VITE_GEONAMES_USERNAME || 'nikoletta17'
 
 const searchQuery = ref('')
 const suggestions = ref([])
@@ -50,7 +49,9 @@ watch(searchQuery, (newVal) => {
     return
   }
 
-  if (newVal.trim().length < 2) {
+  const query = newVal.trim()
+  // Підказки ховаються, якщо менше 3 літер
+  if (query.length < 2 || /\d/.test(query)) {
     suggestions.value = []
     isOpen.value = false
     return
@@ -59,29 +60,48 @@ watch(searchQuery, (newVal) => {
   clearTimeout(debounceTimer)
   debounceTimer = setTimeout(async () => {
     try {
-      const url = `https://secure.geonames.org/searchJSON?name_startsWith=${encodeURIComponent(
-        newVal.trim(),
-      )}&maxRows=5&featureClass=P&username=${GEONAMES_USER}`
-
+      const url = `https://api.weatherapi.com/v1/search.json?key=${API_KEY}&q=${encodeURIComponent(query)}`
       const res = await fetch(url)
       const data = await res.json()
 
-      if (data.geonames) {
-        suggestions.value = data.geonames
-        isOpen.value = true
+      if (Array.isArray(data)) {
+        const filtered = data.filter((item) =>
+          item.name.toLowerCase().includes(query.toLowerCase()),
+        )
+        suggestions.value = filtered
+        isOpen.value = filtered.length > 0
+      } else {
+        suggestions.value = []
+        isOpen.value = false
       }
     } catch (error) {
-      console.error('Помилка при отриманні списку міст:', error)
+      console.error('Ошибка при получении списка городов:', error)
+      suggestions.value = []
+      isOpen.value = false
     }
-  }, 200)
+  }, 250)
 })
 
 const handleCitySearch = () => {
   const query = searchQuery.value.trim()
   if (!query) return
+
+  isOpen.value = false
+  suggestions.value = []
+
+  // перевірка на цифри
+  if (/\d/.test(query)) {
+    emit('get-weather-details', 'INVALID_SEARCH')
+    return
+  }
+
+  const exactMatch = suggestions.value.find((s) => s.name.toLowerCase() === query.toLowerCase())
+  const targetQuery = exactMatch ? `${exactMatch.name}, ${exactMatch.country}` : query
+
   const API_URL = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${encodeURIComponent(
-    query,
+    targetQuery,
   )}&days=2`
+
   emit('get-weather-details', API_URL)
 }
 
@@ -92,54 +112,30 @@ const selectCity = (item) => {
   suggestions.value = []
 
   const weatherUrl = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${encodeURIComponent(
-    item.name,
+    `${item.name},${item.country}`,
   )}&days=2`
   emit('get-weather-details', weatherUrl)
 }
 
 let isLocating = false
 
-// Функція для приведення назв районів до міста
-const normalizeCityName = (rawName = '') => {
-  const lower = rawName.toLowerCase()
-  if (
-    lower.includes('dnepr') ||
-    lower.includes('dnipro') ||
-    lower.includes('amur') ||
-    lower.includes('lotskamenka')
-  ) {
-    return 'Dnipro'
-  }
-  return rawName
-}
-
 const handleLocationSearch = () => {
-  if (isLocating) return // Захист від повторних багаторазових кліків
+  if (isLocating) return
   isLocating = true
 
   navigator.geolocation.getCurrentPosition(
-    async (position) => {
+    (position) => {
       try {
         const { latitude, longitude } = position.coords
         const API_URL = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${latitude},${longitude}&days=2`
-
-        emit('get-weather-details', API_URL)
 
         isOpen.value = false
         suggestions.value = []
         skipSearch = true
 
-        const result = await fetch(
-          `https://secure.geonames.org/findNearbyPlaceNameJSON?lat=${latitude}&lng=${longitude}&username=${GEONAMES_USER}`,
-        )
-        const data = await result.json()
-
-        if (data?.geonames?.[0]?.name) {
-          // нормалізація:
-          searchQuery.value = normalizeCityName(data.geonames[0].name)
-        }
+        emit('get-weather-details', API_URL)
       } catch (err) {
-        console.error('Не вдалося визначити назву міста:', err)
+        console.error('Не вдалося віднайти координати:', err)
       } finally {
         isLocating = false
       }

@@ -1,7 +1,7 @@
 <template>
   <div class="current-weather">
     <img
-      :src="`icons/${currentWeather.weatherIcon}.svg`"
+      :src="`/icons/${currentWeather.weatherIcon || 'clouds'}.svg`"
       alt="Weather icon"
       class="weather-icon"
     />
@@ -17,7 +17,7 @@
 defineProps({
   currentWeather: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
 })
 </script>
